@@ -1,0 +1,24 @@
+calculating time it will take to reach a price target:
+
+```
+    psc time 2400 2000 16
+```
+
+returns:
+
+```
+    It will take approximately 8 months to save 2400.00 at a 16.00% savings rate.
+```
+
+
+calculating percentage it requires to reach a price target within specific time:
+
+```
+    psc percentage 240 2000 2
+```
+
+returns:
+
+```
+    You need to save 6.00% of your income each month to reach 240.00 in 2 months.
+```
