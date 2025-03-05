@@ -1,6 +1,7 @@
 import Foundation
 import ArgumentParser
 import plate
+import Economics
 
 struct PurchaseSavingsCalculator: ParsableCommand {
     static let configuration = CommandConfiguration(
@@ -8,22 +9,6 @@ struct PurchaseSavingsCalculator: ParsableCommand {
         subcommands: [Time.self, Percentage.self],
         defaultSubcommand: Time.self
     )
-
-}
-
-func calculateMonthsToSave(price: Double, income: Double, saveRate: Double) -> Int {
-    let monthlySavings = (saveRate / 100) * income
-    guard monthlySavings > 0 else { return Int.max } // Avoid division by zero
-    return Int(ceil(price / monthlySavings))
-}
-
-func calculateRequiredSaveRate(price: Double, income: Double, months: Int) -> Double {
-    guard months > 0, income > 0 else { return 0 } // Avoid division by zero
-    return (price / (income * Double(months))) * 100
-}
-
-func formatOutput(_ value: Double, decimals: Int = 2) -> String {
-    return String(format: "%.\(decimals)f", value)
 }
 
 struct Time: ParsableCommand {
@@ -42,16 +27,19 @@ struct Time: ParsableCommand {
     var saveRate: Double
 
     func run() throws {
-        let months = calculateMonthsToSave(price: price, income: income, saveRate: saveRate)
+        let config = SavingsTarget.Configuration(target: price, income: income, rounding: true)
+        let months = SavingsTarget.time(config: config, saveRate: saveRate)
+
         print()
         print(
             "It will take approximately "
             + "\(months)".ansi(.bold) 
             + " months to save "
-            + "\(formatOutput(price)) ".ansi(.bold) 
+            + "\(price) ".ansi(.bold) 
             + "at a "
-            + "\(formatOutput(saveRate))% ".ansi(.bold) 
-            + "savings rate.")
+            + "\(saveRate)% ".ansi(.bold) 
+            + "savings rate."
+        )
         print()
     }
 }
@@ -72,16 +60,19 @@ struct Percentage: ParsableCommand {
     var months: Int
 
     func run() throws {
-        let requiredRate = calculateRequiredSaveRate(price: price, income: income, months: months)
+        let config = SavingsTarget.Configuration(target: price, income: income, rounding: true)
+        let requiredRate = SavingsTarget.saverate(config: config, months: months)
+
         print()
         print(
             "You need to save "
-            + "\(formatOutput(requiredRate))%".ansi(.bold) 
+            + "\(requiredRate)%".ansi(.bold) 
             + " of your income each month to reach "
-            + "\(formatOutput(price)) ".ansi(.bold) 
+            + "\(price) ".ansi(.bold) 
             + "in "
             + "\(months) ".ansi(.bold) 
-            + "months.")
+            + "months."
+        )
         print()
     }
 }
