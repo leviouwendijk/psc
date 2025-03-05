@@ -11,16 +11,6 @@ struct PurchaseSavingsCalculator: ParsableCommand {
 
 }
 
-// extension Double: ExpressibleByArgument {
-//     public init?(argument: String) {
-//         if let doubleValue = Double(argument) {
-//             self = doubleValue
-//         } else {
-//             return nil
-//         }
-//     }
-// }
-
 func calculateMonthsToSave(price: Double, income: Double, saveRate: Double) -> Int {
     let monthlySavings = (saveRate / 100) * income
     guard monthlySavings > 0 else { return Int.max } // Avoid division by zero
